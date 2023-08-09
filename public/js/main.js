@@ -3,6 +3,8 @@
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const socket = io();
+const roomName = document.getElementById('room-name')
+const userList = document.getElementById('users')
 
 
 //URL parsed into username and room field values
@@ -10,17 +12,17 @@ const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get('username');
 const room = urlParams.get('room');
 
-console.log(username, room)
 //join chatroom 
 socket.emit('joinRoom', { username, room });
 
-
-
-console.log(username, room);
+// GEt room and users 
+socket.on('roomUsers', ({ room, users }) => {
+    outputRoomName(room);
+    outputUsers(users);
+})
 
 //MSG1 is accessed and logged here on the client side
 socket.on('message', message => {
-    console.log(message);
     outputMessage(message);
 
     // scroll down 
@@ -48,4 +50,17 @@ function outputMessage(message) {
             ${message.text}
           </p>`;
     document.querySelector('.chat-messages').appendChild(div);
-} 
+}
+
+//Add room name to DOM 
+
+function outputRoomName(room) {
+    roomName.innerText = room;
+
+}
+
+function outputUsers(users) {
+    userList.innerHTML = ` 
+        ${users.map(user => `${user.username}`).join('')}
+    `
+}
