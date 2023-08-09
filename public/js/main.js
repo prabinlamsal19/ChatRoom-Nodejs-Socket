@@ -1,6 +1,22 @@
+//this js file is added to the chat.html page only.
+
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const socket = io();
+
+
+//URL parsed into username and room field values
+const urlParams = new URLSearchParams(window.location.search);
+const username = urlParams.get('username');
+const room = urlParams.get('room');
+
+console.log(username, room)
+//join chatroom 
+socket.emit('joinRoom', { username, room });
+
+
+
+console.log(username, room);
 
 //MSG1 is accessed and logged here on the client side
 socket.on('message', message => {
@@ -9,7 +25,6 @@ socket.on('message', message => {
 
     // scroll down 
     chatMessages.scrollTop = chatMessages.scrollHeight;
-
 
 });
 
@@ -28,10 +43,9 @@ chatForm.addEventListener('submit', (e) => {
 function outputMessage(message) {
     const div = document.createElement('div');
     div.classList.add('message');
-    div.innerHTML = `<p class="meta">Brad <span>9:12pm</span></p>
+    div.innerHTML = `<p class="meta">${message.username}<span>${message.time}</span></p>
           <p class="text">
-            ${message}
+            ${message.text}
           </p>`;
     document.querySelector('.chat-messages').appendChild(div);
-
-}
+} 
